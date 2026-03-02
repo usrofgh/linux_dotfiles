@@ -1,0 +1,3 @@
+Ssh github/gitlab (config file)
+ssh aws ( create profile / get-caller-identity )
+
