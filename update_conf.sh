@@ -1,1 +1,1 @@
-dconf dump / >  conf_desk_env.sh
+dconf dump / >  conf_desk_env
