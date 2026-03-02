@@ -14,6 +14,7 @@ sudo apt install wireshark -y
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
+rm awscliv2.zip
 
 ###############  KEEPASSXC #####################
 sudo add-apt-repository -y ppa:phoerious/keepassxc && sudo apt update && sudo apt install -y keepassxc
