@@ -1,3 +1,5 @@
+Turn off CF warp autorun
+Change start menu theme
 Ssh github/gitlab (config file)
 ssh aws ( create profile / get-caller-identity )
 
