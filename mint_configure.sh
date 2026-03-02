@@ -5,9 +5,9 @@ sudo sed -i '/cdrom:/s/^/#/' /etc/apt/sources.list
 rm -rf ~/Templates ~/Music ~/Pictures ~/Videos ~/Public
 
 sudo apt update -y
-# sudo apt upgrade -y
+sudo apt upgrade -y
 sudo apt install dconf-editor -y
-
+sudo apt install xclip -y
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
 sudo apt install wireshark -y
 
