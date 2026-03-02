@@ -35,6 +35,9 @@ show-playlist=false
 volume=1.0
 width=400
 
+[org/blueman/general]
+window-properties=[529, 350, 50, 82]
+
 [org/cinnamon]
 alttab-minimized-aware=false
 alttab-switcher-delay=100
