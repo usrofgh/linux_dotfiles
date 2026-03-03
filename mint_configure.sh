@@ -30,6 +30,7 @@ sudo add-apt-repository -y ppa:phoerious/keepassxc && sudo apt update && sudo ap
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ############## POETRY ###################
 curl -sSL https://install.python-poetry.org | python3 -
+poetry config virtualenvs.in-project true
 ########################    GOOGLE CHROME ####################################
 curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo dpkg -i google-chrome-stable_current_amd64.deb && rm -f goo*.deb
 
