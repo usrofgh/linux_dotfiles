@@ -104,12 +104,12 @@ warp-cli --accept-tos disconnect
 ####################### RCLONE #####################################
 mkdir -p ~/Gdrive
 sudo apt install rclone inotify-tools  -y
-echo "rclone mount gdrive: ~/Gdrive --vfs-cache-mode full --daemon" >> ~/.profile
 echo "https://console.cloud.google.com/auth/clients?project"
 
 cat >> ~/.profile << 'EOF'
+echo "rclone mount gdrive: ~/Gdrive --vfs-cache-mode full --daemon" >> ~/.profile
 LOCAL="$HOME/Gdrive"
-REMOTE="gdrive:ObsidianVault"
+REMOTE="gdrive:"
 while inotifywait -r -e modify,create,delete,move "$LOCAL"; do
     sleep 5
     rclone sync "$LOCAL" "$REMOTE" --fast-list --transfers 8 --checkers 16
