@@ -107,7 +107,8 @@ sudo apt install rclone inotify-tools  -y
 echo "https://console.cloud.google.com/auth/clients?project"
 
 cat >> ~/.profile << 'EOF'
-echo "rclone mount gdrive: ~/Gdrive --vfs-cache-mode full --daemon" >> ~/.profile
+rclone mount gdrive: ~/Gdrive --vfs-cache-mode full --daemon
+
 LOCAL="$HOME/Gdrive"
 REMOTE="gdrive:"
 while inotifywait -r -e modify,create,delete,move "$LOCAL"; do
