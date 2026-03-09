@@ -15,6 +15,7 @@ sudo apt install dconf-editor  -y
 sudo apt install xclip -y
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
 sudo apt install wireshark  -y
+sudo apt install nmap aircrack-ng wifite -y
 ###############  AWS       #####################
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
