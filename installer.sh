@@ -4,13 +4,11 @@ export DEBIAN_FRONTEND=noninteractive
 sudo sed -i '/cdrom:/s/^/#/' /etc/apt/sources.list
 rm -rf ~/Templates ~/Music ~/Pictures ~/Videos ~/Public
 
-sudo apt update
-sudo apt install git -y
-git clone https://github.com/usrofgh/linux_dotfiles.git
-chmod +x linux_dotfiles/installer.sh
-linux_dotfiles/installer.sh
 
+
+sudo apt update
 sudo apt upgrade -y
+sudo apt install git -y
 sudo apt install dconf-editor  -y
 sudo apt install xclip -y
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
