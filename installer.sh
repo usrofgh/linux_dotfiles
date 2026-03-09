@@ -7,15 +7,15 @@ rm -rf ~/Templates ~/Music ~/Pictures ~/Videos ~/Public
 sudo apt update
 sudo apt install git -y
 git clone https://github.com/usrofgh/linux_dotfiles.git
-chmod +x linux_dotfiles/mint_configure.sh
-linux_dotfiles/mint_configure.sh
+chmod +x linux_dotfiles/installer.sh
+linux_dotfiles/installer.sh
 
 sudo apt upgrade -y
 sudo apt install dconf-editor  -y
 sudo apt install xclip -y
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
 sudo apt install wireshark  -y
-sudo apt install nmap aircrack-ng wifite -y
+sudo apt install nmap aircrack-ng wifite reaver -y
 ###############  AWS       #####################
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
