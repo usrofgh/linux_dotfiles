@@ -37,6 +37,30 @@ curl -sSL https://install.python-poetry.org | python3 -
 poetry config virtualenvs.in-project true
 ########################    GOOGLE CHROME ####################################
 curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo dpkg -i google-chrome-stable_current_amd64.deb && rm -f goo*.deb
+
+########################    TOR    ####################################
+sudo curl -s https://www.torproject.org/download/ | grep 'for Linux' | grep -oP 'href="\K[^"]+' | head -1 | sed 's|^|https://www.torproject.org|' | sudo xargs wget -O /opt/tor.tar.xz
+sudo tar -xf /opt/tor.tar.xz
+sudo chown -R $USER:$USER /opt/tor-browser
+sudo rm /opt/tor.tar.xz
+
+# cat > ~/.local/share/applications/tor.desktop << 'EOF'
+# [Desktop Entry]
+# Name=Tor
+# Exec=/opt/tor-browser/start-tor-browser.desktop
+# Icon=tor
+# Type=Application
+# Categories=Browser;
+# EOF
+
+
+########################    MULLVAD VPN & BROWSER    ####################################
+sudo curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mullvad.net/deb/mullvad-keyring.asc
+echo "deb [signed-by=/usr/share/keyrings/mullvad-keyring.asc arch=$( dpkg --print-architecture )] https://repository.mullvad.net/deb/stable stable main" | sudo tee /etc/apt/sources.list.d/mullvad.list
+sudo apt update
+sudo apt install mullvad-vpn mullvad-browser -y 
+
+
 ########################    OBSIDIAN    #####################################
 wget $(wget -qO- https://obsidian.md/download | grep -oP 'https://github.com/obsidianmd/obsidian-releases/releases/download/v[\d.]+/obsidian_[\d.]+_amd64.deb' | head -n 1) && sudo dpkg -i obs*.deb && rm -f obs*.deb
 ######################      POSTMAN     #####################################
@@ -101,23 +125,54 @@ warp-cli --accept-tos registration new
 warp-cli --accept-tos connect
 curl https://www.cloudflare.com/cdn-cgi/trace/
 warp-cli --accept-tos disconnect
-####################### RCLONE #####################################
-mkdir -p ~/Gdrive
-sudo apt install rclone inotify-tools  -y
-echo "https://console.cloud.google.com/auth/clients?project"
 
-cat >> ~/.profile << 'EOF'
-rclone mount gdrive: ~/Gdrive --vfs-cache-mode full --daemon
 
-LOCAL="$HOME/Gdrive"
-REMOTE="gdrive:"
-while inotifywait -r -e modify,create,delete,move "$LOCAL"; do
-    sleep 5
-    rclone sync "$LOCAL" "$REMOTE" --fast-list --transfers 8 --checkers 16
-done &
+
+####################### CRYPTOMATOR #####################################
+
+sudo curl -s  https://cryptomator.org/downloads/linux/thanks/  | grep -oP 'restart:.*?href=\K[^ >]+' | head -1 | xargs wget -O /opt/cryptomator.AppImage
+cat > ~/.local/share/applications/cryptomator.desktop << 'EOF'
+[Desktop Entry]
+Name=Cryptomator
+Exec=/opt/cryptomator.AppImage
+Icon=cryptomator
+Type=Application
+Categories=Utility;
 EOF
-rclone config
 
+####################### MONERO GUI #####################################
+sudo wget https://downloads.getmonero.org/gui/linux64 -O /opt/moneroGui.AppImage
+cat > ~/.local/share/applications/moneroGui.desktop << 'EOF'
+[Desktop Entry]
+Name=Monero
+Exec=/opt/moneroGui.AppImage
+Icon=monero
+Type=Application
+Categories=Wallet;
+EOF
+
+
+####################### ELECTRUM #####################################
+
+sudo curl -s https://electrum.org/#download | grep -oP 'https://[^"]+\.AppImage(?=")' | head -1 | xargs wget -O /opt/electrum.AppImage
+cat > ~/.local/share/applications/electrum.desktop << 'EOF'
+[Desktop Entry]
+Name=Electrum
+Exec=/opt/electrum.AppImage
+Icon=electrum
+Type=Application
+Categories=Wallet;
+EOF
+
+####################### BISQ #####################################
+
+curl -s https://bisq.network/downloads/ | grep '.deb' | grep -oP 'https://[^"]+\.deb' | head -1 | xargs wget -P ~
+sudo dpkg -i Bisq-64bit-1.9.22.deb
+rm  Bisq-64bit-1.9.22.deb
+####################### RCLONE #####################################
+
+sudo -v ; curl https://rclone.org/install.sh | sudo bash
+# rclone config
 ####################### DCONF #####################################
 dconf load / < ~/linux_dotfiles/mint.conf
 echo "DONE"
