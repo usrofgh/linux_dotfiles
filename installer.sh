@@ -1,10 +1,12 @@
 #!/bin/bash
 
+set -e
 export DEBIAN_FRONTEND=noninteractive
 sudo sed -i '/cdrom:/s/^/#/' /etc/apt/sources.list
 rm -rf ~/Templates ~/Music ~/Pictures ~/Videos ~/Public
 
 
+set -o pipefail
 
 sudo apt update
 sudo apt upgrade -y
@@ -13,7 +15,7 @@ sudo apt install dconf-editor  -y
 sudo apt install xclip -y
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
 sudo apt install wireshark  -y
-sudo apt install nmap aircrack-ng wifite reaver -y
+sudo apt install nmap -y
 ###############  AWS       #####################
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
@@ -21,37 +23,40 @@ sudo ./aws/install
 rm awscliv2.zip
 ##############   NVIM ##########################
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo rm -rf /opt/nvim-linux-x86_64
 sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
 rm nvim-linux-x86_64.tar.gz
 
 echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> ~/.bashrc
-sudo wget https://archive.kali.org/archive-keyring.gpg -O /usr/share/keyrings/kali-archive-keyring.gpg
 
 ###############  KEEPASSXC #####################
-sudo add-apt-repository -y ppa:phoerious/keepassxc && sudo apt update && sudo apt install keepassxc -y
+sudo add-apt-repository -y ppa:phoerious/keepassxc
+sudo apt update
+sudo apt install keepassxc -y
 ###############  UV #####################
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ############## POETRY ###################
 curl -sSL https://install.python-poetry.org | python3 -
-poetry config virtualenvs.in-project true
+~/.local/bin/poetry config virtualenvs.in-project true
+
 ########################    GOOGLE CHROME ####################################
-curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo dpkg -i google-chrome-stable_current_amd64.deb && rm -f goo*.deb
+curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+sudo rm -f goo*.deb
 
 ########################    TOR    ####################################
 sudo curl -s https://www.torproject.org/download/ | grep 'for Linux' | grep -oP 'href="\K[^"]+' | head -1 | sed 's|^|https://www.torproject.org|' | sudo xargs wget -O /opt/tor.tar.xz
-sudo tar -xf /opt/tor.tar.xz
+sudo tar -xf /opt/tor.tar.xz -C /opt
 sudo chown -R $USER:$USER /opt/tor-browser
 sudo rm /opt/tor.tar.xz
 
-# cat > ~/.local/share/applications/tor.desktop << 'EOF'
-# [Desktop Entry]
-# Name=Tor
-# Exec=/opt/tor-browser/start-tor-browser.desktop
-# Icon=tor
-# Type=Application
-# Categories=Browser;
-# EOF
+cat > ~/.local/share/applications/tor-browser.desktop << 'EOF'
+[Desktop Entry]
+Name=Tor Browser
+Exec=/opt/tor-browser/Browser/start-tor-browser --detach
+Icon=/opt/tor-browser/Browser/browser/chrome/icons/default/default128.png
+Type=Application
+Categories=Network;WebBrowser;
+EOF
 
 
 ########################    MULLVAD VPN & BROWSER    ####################################
@@ -59,7 +64,6 @@ sudo curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mull
 echo "deb [signed-by=/usr/share/keyrings/mullvad-keyring.asc arch=$( dpkg --print-architecture )] https://repository.mullvad.net/deb/stable stable main" | sudo tee /etc/apt/sources.list.d/mullvad.list
 sudo apt update
 sudo apt install mullvad-vpn mullvad-browser -y 
-
 
 ########################    OBSIDIAN    #####################################
 wget $(wget -qO- https://obsidian.md/download | grep -oP 'https://github.com/obsidianmd/obsidian-releases/releases/download/v[\d.]+/obsidian_[\d.]+_amd64.deb' | head -n 1) && sudo dpkg -i obs*.deb && rm -f obs*.deb
@@ -77,6 +81,7 @@ Terminal=false' > ~/.local/share/applications/postman.desktop
 ########################    PYCHARM    #####################################
 wget https://download.jetbrains.com/python/pycharm-2025.3.1.1.tar.gz
 sudo tar -xzf pycharm-2025.3.1.1.tar.gz -C  /opt
+sudo chown -R $USER:$USER /opt/pycharm-2025.3.1.1
 rm pycharm-2025.3.1.1.tar.gz
 cp ~/linux_dotfiles/jetbra.zip .
 unzip jetbra.zip
@@ -95,6 +100,8 @@ Terminal=false
 StartupWMClass=jetbrains-pycharm' > ~/.local/share/applications/pycharm.desktop
 #######################     TELEGRTAM  ######################################
 curl -L "https://telegram.org/dl/desktop/linux" | sudo tar -xJf - -C /opt
+sudo chown -R $USER:$USER /opt/Telegram
+
 ######################      DOCKER    #######################################
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl
@@ -118,19 +125,20 @@ sudo usermod -aG docker $USER
 
 
 ###################       CLOUDFLARE WARP ##########################################
-curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com noble main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-sudo apt update && sudo apt install cloudflare-warp -y
-warp-cli --accept-tos registration new
-warp-cli --accept-tos connect
-curl https://www.cloudflare.com/cdn-cgi/trace/
-warp-cli --accept-tos disconnect
+# curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+# echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com noble main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+# sudo apt update && sudo apt install cloudflare-warp -y
+# warp-cli --accept-tos registration new
+# warp-cli --accept-tos connect
+# curl https://www.cloudflare.com/cdn-cgi/trace/
+# warp-cli --accept-tos disconnect
 
 
 
 ####################### CRYPTOMATOR #####################################
 
-sudo curl -s  https://cryptomator.org/downloads/linux/thanks/  | grep -oP 'restart:.*?href=\K[^ >]+' | head -1 | xargs wget -O /opt/cryptomator.AppImage
+sudo curl -s  https://cryptomator.org/downloads/linux/thanks/  | grep -oP 'restart:.*?href=\K[^ >]+' | head -1 | sudo xargs wget -O /opt/cryptomator.AppImage
+sudo chmod +x /opt/cryptomator.AppImage
 cat > ~/.local/share/applications/cryptomator.desktop << 'EOF'
 [Desktop Entry]
 Name=Cryptomator
@@ -142,6 +150,7 @@ EOF
 
 ####################### MONERO GUI #####################################
 sudo wget https://downloads.getmonero.org/gui/linux64 -O /opt/moneroGui.AppImage
+sudo chmod +x /opt/moneroGui.AppImage
 cat > ~/.local/share/applications/moneroGui.desktop << 'EOF'
 [Desktop Entry]
 Name=Monero
@@ -154,7 +163,8 @@ EOF
 
 ####################### ELECTRUM #####################################
 
-sudo curl -s https://electrum.org/#download | grep -oP 'https://[^"]+\.AppImage(?=")' | head -1 | xargs wget -O /opt/electrum.AppImage
+sudo curl -s https://electrum.org/#download | grep -oP 'https://[^"]+\.AppImage(?=")' | head -1 | sudo xargs wget -O /opt/electrum.AppImage
+sudo chmod +x /opt/electrum.AppImage
 cat > ~/.local/share/applications/electrum.desktop << 'EOF'
 [Desktop Entry]
 Name=Electrum
@@ -165,10 +175,12 @@ Categories=Wallet;
 EOF
 
 ####################### BISQ #####################################
+BISQ_URL=$(curl -s https://bisq.network/downloads/ | grep -oP 'https://[^"]+\.deb' | head -1)
+wget "$BISQ_URL" -P ~
+BISQ_FILE=$(basename "$BISQ_URL")
+sudo dpkg -i ~/"$BISQ_FILE"
+rm ~/"$BISQ_FILE"
 
-curl -s https://bisq.network/downloads/ | grep '.deb' | grep -oP 'https://[^"]+\.deb' | head -1 | xargs wget -P ~
-sudo dpkg -i Bisq-64bit-1.9.22.deb
-rm  Bisq-64bit-1.9.22.deb
 ####################### RCLONE #####################################
 
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
